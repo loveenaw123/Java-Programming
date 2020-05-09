@@ -1,0 +1,22 @@
+import java.net.*;
+import java.io.*;
+import java.util.*;
+public class SErverforMultiClient {
+
+     public static void main(String args[])
+   {
+
+   	 try(ServerSocket serversocket = new ServerSocket(2000))
+   	 {
+   	 	while(true)
+   	 	{
+            new Echoer(serversocket.accept()).start();
+   	 }
+   	 }
+   	 catch(IOException e)
+   	 {
+   	 	System.out.println("Server Exception"+e.getMessage());
+   	 }
+   }
+
+}
