@@ -1,0 +1,238 @@
+import java.util.*;
+import java.awt.*;
+import javax.swing.*;
+public class PolygonSplitting
+{
+public static void main(String[] args)
+{
+PolygonFrame df = new PolygonFrame();
+df.setVisible(true);
+}
+}
+class SplittedPolygonFrame extends JPanel
+{
+int n;
+int vx[] = new int[100];
+
+int vy[] = new int[100];
+int line[][] = new int[2][2];
+double m[] = new double[100];
+double mline;
+SplittedPolygonFrame(int n,int vx[],int vy[],int line[][],double m[],double mline)
+{
+setSize(400,400);
+setBackground(Color.cyan);
+this.n = n;
+this.mline = mline;
+this.vx = vx;
+this.vy = vy;
+this.line = line;
+this.m = m;
+}
+public void paint(Graphics g)
+{
+super.paint(g);
+myPolygonSplitting(g);
+}
+public void myPolygonSplitting(Graphics g)
+{
+ArrayList<Integer> L0 = new ArrayList<Integer>();
+ArrayList<Integer> L1 = new ArrayList<Integer>();
+ArrayList<Integer> L2 = new ArrayList<Integer>();
+for(int i=0;i<n;i++)
+{
+if(mline==m[i]&&(vy[i]-(m[i]*vx[i]))==(line[0][1]-(mline*line[0][0])))
+{
+L0.add(i);
+L0.add((i+1));
+}
+if((vy[i]>line[0][1]&&vy[i]>line[1][1])||(vx[i]>line[0][0] && vx[i]>line[1][0]))
+L1.add(i);
+else if((vy[i]<line[0][1]&&vy[i]<line[1][1])|| (vx[i]<line[0][0] && vx[i]<line[1][0]))
+L2.add(i);
+}
+//case a
+if(L0.size()<n && !L0.isEmpty())
+
+{
+g.drawPolygon(vx,vy,n);
+g.drawString("case a",200,200);
+}
+//case b
+else if(L2.isEmpty())
+{
+g.drawPolygon(vx,vy,n);
+g.drawString("case b",200,200);
+}
+//case c
+else if(L1.isEmpty())
+{
+g.drawPolygon(vx,vy,n);
+g.drawString("case c",200,200);
+}
+//case d
+else if(L0.size()==(n-1))
+{
+g.drawPolygon(vx,vy,n);
+g.drawString("case d",200,200);
+}
+else
+{
+int plx[] = new int[100];
+int ply[] = new int[100];
+int nlx[]= new int[100];
+int nly[] = new int[100];
+int j=0,k=0;
+for(int i=0;i<(n-1);i++)
+{
+int src = i, target = i+1;
+//case e and f
+if(!L1.contains(src) && !L1.contains(target))
+{
+plx[j] = vx[src];
+ply[j++] = vy[src];
+plx[j] = vx[target];
+ply[j++] = vy[target];
+if(vy[target]==((mline*vx[target])+line[0][1]-(mline*line[0][0])))
+{
+
+plx[j] = vx[src];
+ply[j++] = vy[src];
+plx[j] = vx[target];
+ply[j++] = vy[target];
+}
+}
+//case g and h
+else if(!L2.contains(src) && !L2.contains(target))
+{
+nlx[k] = vx[src];
+nly[k++] = vy[src];
+nlx[k] = vx[target];
+nly[k++] = vy[target];
+if(vy[target]==((mline*vx[target])+line[0][1]-(mline*line[0][0])))
+{
+nlx[k] = vx[src];
+nly[k++] = vy[src];
+nlx[k] = vx[target];
+nly[k++] = vy[target];
+}
+}
+else
+{
+//case i
+if(L2.contains(src)&&L1.contains(target))
+{
+plx[j] = vx[src];
+ply[j++] = vy[src];
+plx[j] = (int)Math.floor((vy[src]-line[0][1])+(mline*line[0][0]-m[src]*vx[src]));
+plx[j] = (int)Math.floor(plx[j]/(mline-m[src]));
+ply[j] =
+
+(int)Math.floor((mline*vy[src]-m[src]*line[0][1])+((mline*m[src])*(line[0][0]-vx[src])));
+
+ply[j] = (int)Math.floor(ply[j]/(mline-m[src]));
+nlx[k] = plx[j];
+nly[k++] = ply[j];
+nlx[k] = vx[target];
+nly[k] = vy[target];
+j++;
+k++;
+
+}
+//case j
+if(L1.contains(src)&&L2.contains(target))
+{
+nlx[k] = vx[src];
+nly[k++] = vy[src];
+int ipx = (int)Math.floor((vy[src]-line[0][1])+(mline*line[0][0]-m[src]*vx[src]));
+nlx[k] = (int)Math.floor(ipx/(mline-m[src]));
+int ipy =
+
+(int)Math.floor((mline*vy[src])-(m[src]*line[0][1])+(mline*m[src]*(line[0][0]-vx[src])));
+
+nly[k] = (int)Math.floor(ipy/(mline-m[src]));
+plx[j] = nlx[k];
+ply[j++] = nly[k];
+plx[j] = vx[target];
+ply[j] = vy[target];
+j++;
+k++;
+}
+}
+}
+g.drawPolygon(plx,ply,j);
+g.drawPolygon(nlx,nly,k);
+g.drawString("other cases",200,200);
+}
+}
+}
+class OriginalPolygon extends JPanel
+{
+int n;
+int vx[] = new int[100];
+int vy[] = new int[100];
+int line[][] = new int[2][2];
+OriginalPolygon(int line[][],int vx[],int vy[],int n){
+
+setSize(500,500);
+setBackground(Color.cyan);
+this.line = line;
+this.vx = vx;
+this.vy = vy;
+this.n = n;
+}
+public void paint(Graphics g)
+{
+super.paint(g);
+myPolygon(g);
+}
+public void myPolygon(Graphics g)
+{
+//drawing original polygon
+//drawing splitting line
+g.drawString("Original Polygon",200,200);
+g.drawLine(line[0][0],line[0][1],line[1][0],line[1][1]);
+g.drawPolygon(vx,vy,n);
+}
+}
+class PolygonFrame extends JFrame
+{
+int n;
+int vx[] = new int[100];
+int vy[] = new int[100];
+int line[][] = new int[2][2];
+double m[] = new double[100];
+double mline;
+PolygonFrame()
+{
+setSize(1000,1000);
+setTitle("Splitting Of Polygon By Line");
+setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+setLayout(null);
+Scanner sc = new Scanner(System.in);
+System.out.println("Enter number of vertices of the polygon");
+
+n = sc.nextInt();
+System.out.println("Enter x coordinates for the vertices");
+for(int i=0;i<n;i++)
+vx[i] = sc.nextInt();
+System.out.println("Enter y coordinates for the vertices");
+for(int i=0;i<n;i++)
+vy[i] = sc.nextInt();
+for(int i=0;i<(n-1);i++)
+m[i] = (double)(vy[i+1]-vy[i])/(double)(vx[i+1]-vx[i]);
+System.out.println("Enter the end points of line");
+for(int i=0;i<2;i++)
+{
+line[i][0] = sc.nextInt();
+line[i][1] = sc.nextInt();
+}
+mline = (double)(line[1][1]-line[0][1])/(double)(line[1][0]-line[0][0]);
+OriginalPolygon op = new OriginalPolygon(line,vx,vy,n);
+op.setBounds(100,100,500,500);
+add(op);
+SplittedPolygonFrame spf = new SplittedPolygonFrame(n,vx,vy,line,m,mline);
+spf.setBounds(700, 100, 500,500);
+add(spf);
+}
+}
