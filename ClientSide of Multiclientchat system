@@ -1,0 +1,26 @@
+import java.net.*;
+import java.io.*;
+import java.util.Scanner;
+public class MultipleClient
+{
+	public static void main(String[] args)
+	{
+		try
+		{
+			Socket socket=new Socket("127.0.0.1",5000);
+			BufferedReader in=new BufferedReader(new InputStreamReader
+				(socket.getInputStream()));
+			String str=in.readLine();
+			System.out.println("Enter your name:");
+			Scanner sc=new Scanner(System.in);
+			String name=sc.next();
+			PrintWriter pw=new PrintWriter(socket.getOutputStream(),true);
+			pw.println("Client"+" "+name);
+			socket.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+}
